@@ -26,7 +26,7 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
     const trendingCollection= client.db('e-commerce').collection('products');
-
+    const cartCollection = client.db('e-commerce').collection('carts');
     app.get('/trending',async(req,res)=>{
       const result =await trendingCollection.find().toArray();
       res.send(result);
@@ -36,6 +36,17 @@ async function run() {
       const id = req.params.id;
       const query ={_id:new ObjectId(id)};
       const result = await trendingCollection.findOne(query);
+      res.send(result);
+    })
+    // Cart collection
+    app.post('/carts', async(req,res)=>{
+      const item = req.body;
+      const result = await cartCollection.insertOne(item);
+      res.send(result);
+    })
+
+    app.get('/carts', async(req,res)=>{
+      const result = await cartCollection.find().toArray();
       res.send(result);
     })
     // Send a ping to confirm a successful connection
