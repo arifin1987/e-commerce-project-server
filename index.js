@@ -24,9 +24,10 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
     const trendingCollection= client.db('e-commerce').collection('products');
     const cartCollection = client.db('e-commerce').collection('carts');
+    const usersCollection = client.db('e-commerce').collection('users');
     app.get('/trending',async(req,res)=>{
       const result =await trendingCollection.find().toArray();
       res.send(result);
@@ -48,6 +49,21 @@ async function run() {
     app.get('/carts', async(req,res)=>{
       const result = await cartCollection.find().toArray();
       res.send(result);
+    })
+
+    app.delete('/carts/:id',async(req,res)=>{
+      const id= req.params.id;
+      console.log(id);
+      const query ={_id: new ObjectId(id)}
+      const result = await cartCollection.deleteOne(query);
+      res.send(result);
+    })
+    // users related apis
+    app.post('/users', async(req,res)=>{
+      const user = req.body;
+      const result = await usersCollection.insertOne(user);
+      res.send(result);
+
     })
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
